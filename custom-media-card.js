@@ -81,8 +81,16 @@ class CustomMediaCard extends LitElement {
     }
     .details { flex: 1; min-width: 0; }
     .name { font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
-    .scroll-text { overflow-x: auto; overflow-y: hidden; white-space: nowrap; text-overflow: clip; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
-    .scroll-text::-webkit-scrollbar { display: none; }
+    .scroll-text { display: block; overflow: hidden; white-space: nowrap; }
+    .marquee-track { display: inline-flex; width: max-content; }
+    .marquee-track span { flex: 0 0 auto; }
+    .marquee-track span + span { display: none; }
+    .scroll-text.overflowing .marquee-track span { padding-right: 3rem; }
+    .scroll-text.overflowing .marquee-track span + span { display: inline-block; }
+    .scroll-text.overflowing .marquee-track { animation: cmc-marquee 14s linear infinite; }
+    .scroll-text.overflowing:hover .marquee-track { animation-play-state: paused; }
+    @keyframes cmc-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .scroll-text.overflowing .marquee-track { animation: none; } }
     .artist, .album, .state { color: var(--secondary-text-color); font-size: 13px; margin-top: 3px; overflow-wrap: anywhere; }
     .state { text-transform: capitalize; }
     .placeholder { display:flex; align-items:center; justify-content:center; color:var(--secondary-text-color); }
@@ -112,6 +120,13 @@ class CustomMediaCard extends LitElement {
   }
 
   getCardSize() { return this._config?.show_progress ? 3 : 2; }
+
+  updated() {
+    this.shadowRoot?.querySelectorAll(".scroll-text").forEach((element) => {
+      const text = element.querySelector(".marquee-track span");
+      if (text) element.classList.toggle("overflowing", text.getBoundingClientRect().width > element.clientWidth + 1);
+    });
+  }
 
   get _player() { return this.hass?.states?.[this._config?.entity]; }
   get _attrs() { return this._player?.attributes || {}; }
@@ -184,8 +199,8 @@ class CustomMediaCard extends LitElement {
             : html`<div class="art placeholder"><ha-icon icon="mdi:music"></ha-icon></div>`) : ""}
           <div class="details">
             ${this._config.name ? html`<div class="name">${this._config.name}</div>` : ""}
-            ${this._config.show_title && a.media_title ? html`<div class="name scroll-text" title="${a.media_title}">${a.media_title}</div>` : ""}
-            ${this._config.show_artist && a.media_artist ? html`<div class="artist scroll-text" title="${a.media_artist}">${a.media_artist}</div>` : ""}
+            ${this._config.show_title && a.media_title ? html`<div class="name scroll-text" title="${a.media_title}"><div class="marquee-track"><span>${a.media_title}</span><span aria-hidden="true">${a.media_title}</span></div></div>` : ""}
+            ${this._config.show_artist && a.media_artist ? html`<div class="artist scroll-text" title="${a.media_artist}"><div class="marquee-track"><span>${a.media_artist}</span><span aria-hidden="true">${a.media_artist}</span></div></div>` : ""}
             ${this._config.show_album && a.media_album_name ? html`<div class="album">${a.media_album_name}</div>` : ""}
             ${this._config.show_state ? html`<div class="state">${p.state}</div>` : ""}
           </div>
