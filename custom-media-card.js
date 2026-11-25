@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css } from "https://esm.sh/lit@3.3.1?bundle";
 
 const CARD_VERSION = "1.0.0";
 
