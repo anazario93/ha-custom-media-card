@@ -93,7 +93,7 @@ class CustomMediaCard extends LitElement {
       width:40px; height:40px; border-radius:50%; cursor:pointer;
       display:inline-flex; align-items:center; justify-content:center;
     }
-    .controls button:hover, .utility button:hover { background:var(-- ให้, var(--secondary-background-color)); }
+    .controls button:hover, .utility button:hover { background:var(--cmc-hover, var(--secondary-background-color)); }
     .controls button.primary { background:var(--cmc-accent, var(--primary-color)); color:var(--text-primary-color, white); width:46px; height:46px; }
     button[disabled] { opacity:.35; cursor:default; }
     ha-icon { --mdc-icon-size:22px; }
@@ -106,8 +106,7 @@ class CustomMediaCard extends LitElement {
   `;
 
   setConfig(config) {
-    if (!config || !config.entity) throw new Error("Please select a media_player entity.");
-    this._config = { ...DEFAULTS, ...config };
+    this._config = { ...DEFAULTS, ...(config || {}) };
   }
 
   getCardSize() { return this._config?.show_progress ? 3 : 2; }
@@ -165,6 +164,7 @@ class CustomMediaCard extends LitElement {
   render() {
     if (!this._config || !this.hass) return html``;
     const p = this._player;
+    if (!this._config.entity) return html`<ha-card><div class="empty">Select a media player in the card editor.</div></ha-card>`;
     if (!p) return html`<ha-card><div class="empty">Entity not found: ${this._config.entity}</div></ha-card>`;
     const a = this._attrs;
     const playing = p.state === "playing";
