@@ -81,6 +81,8 @@ class CustomMediaCard extends LitElement {
     }
     .details { flex: 1; min-width: 0; }
     .name { font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+    .scroll-text { overflow-x: auto; overflow-y: hidden; white-space: nowrap; text-overflow: clip; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
+    .scroll-text::-webkit-scrollbar { display: none; }
     .artist, .album, .state { color: var(--secondary-text-color); font-size: 13px; margin-top: 3px; overflow-wrap: anywhere; }
     .state { text-transform: capitalize; }
     .placeholder { display:flex; align-items:center; justify-content:center; color:var(--secondary-text-color); }
@@ -182,8 +184,8 @@ class CustomMediaCard extends LitElement {
             : html`<div class="art placeholder"><ha-icon icon="mdi:music"></ha-icon></div>`) : ""}
           <div class="details">
             ${this._config.name ? html`<div class="name">${this._config.name}</div>` : ""}
-            ${this._config.show_title && a.media_title ? html`<div class="name">${a.media_title}</div>` : ""}
-            ${this._config.show_artist && a.media_artist ? html`<div class="artist">${a.media_artist}</div>` : ""}
+            ${this._config.show_title && a.media_title ? html`<div class="name scroll-text" title="${a.media_title}">${a.media_title}</div>` : ""}
+            ${this._config.show_artist && a.media_artist ? html`<div class="artist scroll-text" title="${a.media_artist}">${a.media_artist}</div>` : ""}
             ${this._config.show_album && a.media_album_name ? html`<div class="album">${a.media_album_name}</div>` : ""}
             ${this._config.show_state ? html`<div class="state">${p.state}</div>` : ""}
           </div>
